@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Animal Picture App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      text-align: center;
+      padding: 20px 0;
+      background: #4CAF50;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin: 0;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    select, input[type="number"] {
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    #result {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+      padding: 10px 20px 40px;
+      justify-items: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 220px;
+      height: 150px; /* fixed height to keep dimensions consistent */
+    }
+
+    .card img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <h2>Animal Picture App 🐾</h2>
+
+  <div class="controls">
+    <label>Animal:
+      <select id="animal">
+        <option>cat</option>
+        <option>dog</option>
+        <option>duck</option>
+      </select>
+    </label>
+
+    <label>Count:
+      <input id="count" value="1" type="number" min="1" />
+    </label>
+
+    <button id="fetch">Fetch & Save</button>
+    <button id="last">Show Last</button>
+  </div>
+
+  <div id="result"></div>
+
+<script>
+const resultDiv = document.getElementById('result');
+
+document.getElementById('fetch').onclick = async () => {
+  const animal = document.getElementById('animal').value;
+  const count = document.getElementById('count').value;
+
+  const res = await fetch(`/api/pictures?animal=${animal}&count=${count}`, { method: 'POST' });
+  const ids = (await res.json()).slice().reverse(); // newest first
+
+  resultDiv.innerHTML = ''; // clear previous content
+  const images = new Array(ids.length);
+
+  await Promise.all(ids.map(async (id, index) => {
+    const imgRes = await fetch(`/api/pictures/${id}`);
+    if (imgRes.ok) {
+      const blob = await imgRes.blob();
+      const url = URL.createObjectURL(blob);
+      const img = document.createElement('img');
+      img.src = url;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.appendChild(img);
+      images[index] = card;
+    } else {
+      console.warn('Failed to fetch image for ID', id);
+    }
+  }));
+
+  images.forEach(card => { if (card) resultDiv.appendChild(card); });
+};
+
+document.getElementById('last').onclick = async () => {
+  const animal = document.getElementById('animal').value;
+  const res = await fetch(`/api/pictures/last?animal=${animal}`);
+  if (!res.ok) {
+    resultDiv.innerHTML = '<p>No picture found</p>';
+    return;
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const img = document.createElement('img');
+  img.src = url;
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.appendChild(img);
+  resultDiv.innerHTML = '';
+  resultDiv.appendChild(card);
+};
+</script>
+</body>
+</html>
