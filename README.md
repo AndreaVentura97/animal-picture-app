@@ -9,8 +9,7 @@ The database is **volatile** (cleared when the app stops).
 ## ✨ Features  
 
 - **Fetch & Save** pictures by animal type (`cat`, `dog`, `duck`)  
-- **Retrieve last saved picture** per animal  
-- **Retrieve by ID**  
+- **Retrieve last saved picture** per animal   
 - **H2 in-memory database** for persistence (`jdbc:h2:mem:testdb`)  
 - Minimal **UI pages** (`index.html`, `gallery.html`) for quick testing  
 
@@ -171,17 +170,3 @@ assertThat(result).isNotNull();
 assertThat(result.getId()).isEqualTo(42L);
 ```  
 
-Run all tests with:  
-
-```bash
-./mvnw test
-```  
-
----
-
-## 🚀 Future Improvements  
-
-- Add support for more animals via [public APIs](https://github.com/public-apis/public-apis)  
-- Persist images in a durable database (PostgreSQL, MySQL)  
-- Add pagination to gallery view  
-- Kubernetes Helm chart for deployment  
