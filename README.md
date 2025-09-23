@@ -11,7 +11,7 @@ The database is **volatile** (cleared when the app stops).
 - **Fetch & Save** pictures by animal type (`cat`, `dog`, `duck`)  
 - **Retrieve last saved picture** per animal   
 - **H2 in-memory database** for persistence (`jdbc:h2:mem:testdb`)  
-- Minimal **UI pages** (`index.html`, `gallery.html`) for quick testing  
+- Minimal **UI pages** (`index.html`) for quick testing  
 
 ---
 
